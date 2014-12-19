@@ -88,6 +88,11 @@ ExchangeManager::~ExchangeManager()
     mosqpp::lib_cleanup(); // End of use of this library
 }
 
+bool ExchangeManager::getIsActive() const
+{
+    return isActive;
+}
+
 void ExchangeManager::publish(const string &topic, int payloadlen, const void *payload, int qos, bool retain)
 {
     // Publish
