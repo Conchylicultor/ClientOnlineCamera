@@ -9,6 +9,7 @@ SOURCES += src/main.cpp \
     src/exchangemanager.cpp
 
 LIBS += -lmosquittopp
+LIBS += `pkg-config opencv --libs`
 
 HEADERS += \
     src/exchangemanager.h
