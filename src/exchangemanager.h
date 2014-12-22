@@ -4,10 +4,7 @@
 #include <list>
 #include <string>
 
-#include "opencv2/opencv.hpp"
 #include "mosquittopp.h"
-
-using namespace cv;
 
 struct ConnectedClient
 {

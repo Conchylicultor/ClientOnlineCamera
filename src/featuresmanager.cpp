@@ -3,6 +3,8 @@
 #include <fstream>
 #include "exchangemanager.h"
 
+static const unsigned int MIN_SEQUENCE_SIZE = 5; // Otherwise, the sequence is ignored
+
 bool replace(std::string &str, const std::string &from, const std::string &to)
 {
     size_t start_pos = str.find(from);
@@ -45,14 +47,23 @@ FeaturesManager::FeaturesManager()
     }
 
     fileListPersons.close();
+
+    currentSequenceId = 0;
 }
 
 void FeaturesManager::sendNext()
 {
-    static int i = 0;
-    if(ExchangeManager::getInstance().getIsActive())
+    if(ExchangeManager::getInstance().getIsActive() && currentSequenceId < listSequences.size())
     {
-        cout << listSequences.at(i).getName() << endl;
-        ++i;
+        cout << "Sequence: " << listSequences.at(currentSequenceId).getName() << endl;
+        if(listSequences.at(currentSequenceId).getListImageIds().size() < MIN_SEQUENCE_SIZE)
+        {
+            cout << "Sequence ignored (too short)"<< endl;
+        }
+        else
+        {
+
+        }
+        ++currentSequenceId;
     }
 }

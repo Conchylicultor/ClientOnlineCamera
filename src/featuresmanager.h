@@ -20,6 +20,8 @@ public:
 
 private:
     vector<Sequence> listSequences;
+
+    unsigned int currentSequenceId;
 };
 
 #endif // FEATURESMANAGER_H
