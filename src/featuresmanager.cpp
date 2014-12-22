@@ -53,11 +53,7 @@ FeaturesManager::FeaturesManager()
     currentSequenceId = 0;
 
     // Allocation of the array
-    arrayToSendSize = 0;
-    arrayToSendSize += 3*HIST_SIZE; // Histogram size
-    arrayToSendSize += NB_MAJOR_COLORS_EXTRACT*3; // Major colors
-    arrayToSendSize *= MIN_SEQUENCE_SIZE; // Number of element
-    arrayToSend = new float[arrayToSendSize];
+    arrayToSend = nullptr;
 }
 
 FeaturesManager::~FeaturesManager()
@@ -94,10 +90,8 @@ void FeaturesManager::sendNext()
             // Send the features over the network
 
             // Fill the array
-            for(int i = 0 ; i < arrayToSendSize ; ++i)
-            {
-                arrayToSend[i] = currentSequenceId;
-            }
+            size_t arrayToSendSize = 0; // Offset
+            Features::computeArray(arrayToSend, arrayToSendSize, listCurrentSequenceFeatures);
 
             ExchangeManager::getInstance().publishFeatures(arrayToSendSize*sizeof(float),arrayToSend);
 

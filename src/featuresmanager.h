@@ -24,7 +24,6 @@ private:
 
     unsigned int currentSequenceId;
 
-    size_t arrayToSendSize;
     float *arrayToSend;
 };
 
