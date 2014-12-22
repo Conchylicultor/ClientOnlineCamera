@@ -14,6 +14,8 @@ using namespace cv;
 #define NB_MAJOR_COLORS_EXTRACT 7
 #define NB_MAJOR_COLORS_KEEP 5
 
+#define HIST_SIZE 100
+
 struct MajorColorElem
 {
     Vec3b color;

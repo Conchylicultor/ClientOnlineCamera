@@ -17,6 +17,9 @@ class ExchangeManager : public mosqpp::mosquittopp
 public:
     static ExchangeManager &getInstance();
     bool getIsActive() const;
+    bool getIsLocked() const;
+
+    void publishFeatures(int payloadlen, const void *payload);
 
 private:
     ExchangeManager();
@@ -28,11 +31,14 @@ private:
 
     void on_message(const struct mosquitto_message *message);
     void onProtocolVersion(const struct mosquitto_message *message); // Received protocol version from the main client
+    void on_publish(int mid);
 
     // Unique client id
     int clientId;
     // True if we are on the same protocol version that the main client and that exchanges can be active
     bool isActive;
+    // True if a message is currently send
+    bool isLocked;
 };
 
 #endif // EXCHANGEMANAGER_H

@@ -16,12 +16,16 @@ class FeaturesManager
 {
 public:
     FeaturesManager();
+    ~FeaturesManager();
     void sendNext();
 
 private:
     vector<Sequence> listSequences;
 
     unsigned int currentSequenceId;
+
+    size_t arrayToSendSize;
+    float *arrayToSend;
 };
 
 #endif // FEATURESMANAGER_H

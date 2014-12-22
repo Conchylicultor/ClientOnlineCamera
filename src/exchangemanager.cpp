@@ -10,6 +10,7 @@ using namespace std;
 const string protocolVersionTopic = "reid_client/protocol_version";
 const string newCamTopic = "cam_clients/new_connection";
 const string removeCamTopic = "cam_clients/remove_connection";
+const string dataCamTopic = "cam_clients/data";
 
 const unsigned int version_protocol = 1;
 
@@ -20,7 +21,8 @@ ExchangeManager &ExchangeManager::getInstance()
 }
 
 ExchangeManager::ExchangeManager() : mosqpp::mosquittopp(),
-    isActive(false)
+    isActive(false),
+    isLocked(false)
 {
     // Initialise the library
     mosqpp::lib_init();
@@ -88,9 +90,20 @@ ExchangeManager::~ExchangeManager()
     mosqpp::lib_cleanup(); // End of use of this library
 }
 
+void ExchangeManager::publishFeatures(int payloadlen, const void *payload)
+{
+    isLocked = true;
+    publish(dataCamTopic, payloadlen, payload, 2);
+}
+
 bool ExchangeManager::getIsActive() const
 {
     return isActive;
+}
+
+bool ExchangeManager::getIsLocked() const
+{
+    return isLocked;
 }
 
 void ExchangeManager::publish(const string &topic, int payloadlen, const void *payload, int qos, bool retain)
@@ -178,4 +191,10 @@ void ExchangeManager::onProtocolVersion(const mosquitto_message *message)
                       &client,
                       2);
     }
+}
+
+void ExchangeManager::on_publish(int mid)
+{
+    std::cout << "Publication done !!!" << std::endl;
+    isLocked = false;
 }

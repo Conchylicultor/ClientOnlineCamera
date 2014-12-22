@@ -4,11 +4,6 @@
 #include <array>
 
 
-// Variables for features computation
-
-#define HIST_SIZE 100
-
-
 // Sort color elements
 bool sortMajorColors(MajorColorElem elem1, MajorColorElem elem2)
 {
