@@ -50,14 +50,35 @@ void Features::computeArray(float *&array, size_t &sizeArray, const vector<Featu
     size_t totalSize = sizeArray + (sizeElementArray * listFeatures.size());
     array = new float[totalSize];
 
-    // Fill the array
-    for(size_t i = sizeArray ; i < totalSize ; ++i)
-    {
-
-    }
+    // Clear the array (to be sure)
     for(size_t i = 0 ; i < totalSize ; ++i)
     {
-        array[i] = 23489.345;
+        array[i] = 0.0;
+    }
+
+    // Fill the array
+    size_t currentId = sizeArray; // We start with the offset
+    for(FeaturesElement currentElem : listFeatures)
+    {
+        // Histogram
+        for(size_t channelId = 0 ; channelId < 3 ; ++channelId)
+        {
+            for(size_t i = 0 ; i < HIST_SIZE ; ++i)
+            {
+                array[currentId] = currentElem.histogramChannels.at(channelId).at<float>(i);
+                ++currentId;
+            }
+        }
+
+        // Major colors
+        for(size_t i = 0 ; i < NB_MAJOR_COLORS_EXTRACT ; ++i)
+        {
+            for(size_t j = 0 ; j < 3 ; ++j)// Channel number
+            {
+                array[currentId] = currentElem.majorColors.at(i).color[j];
+                ++currentId;
+            }
+        }
     }
 
     sizeArray = totalSize;

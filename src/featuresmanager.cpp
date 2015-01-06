@@ -65,7 +65,7 @@ void FeaturesManager::sendNext()
 {
     if(ExchangeManager::getInstance().getIsActive() &&
             !ExchangeManager::getInstance().getIsLocked() &&
-            currentSequenceId < listSequences.size()) // Todo: Block if previous message not finished
+            currentSequenceId < listSequences.size())
     {
         Sequence &currentSequence = listSequences.at(currentSequenceId);
         cout << "Sequence: " << currentSequence.getName() << endl;
@@ -82,19 +82,15 @@ void FeaturesManager::sendNext()
             {
                 listCurrentSequenceFeatures.push_back(FeaturesElement());
                 int index = i * ((currentSequence.getListImageIds().size()-1)/MIN_SEQUENCE_SIZE); // Linear function (0,0) to (MIN_SEQUENCE_SIZE, listImageIds().size()-1)
-                cout << index << " ";
                 Features::computeFeature("../../Data/Traces/" + currentSequence.getListImageIds().at(index), listCurrentSequenceFeatures.back());
             }
-            cout << endl;
-
-            // Send the features over the network
 
             // Fill the array
             size_t arrayToSendSize = 0; // Offset
             Features::computeArray(arrayToSend, arrayToSendSize, listCurrentSequenceFeatures);
 
+            // Send the features over the network
             ExchangeManager::getInstance().publishFeatures(arrayToSendSize*sizeof(float),arrayToSend);
-
         }
         ++currentSequenceId;
     }
