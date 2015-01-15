@@ -173,7 +173,7 @@ void ExchangeManager::on_message(const mosquitto_message *message)
 void ExchangeManager::onProtocolVersion(const mosquitto_message *message)
 {
     unsigned int protocolVersionReceived = *((unsigned int*)message->payload);
-    if(protocolVersionReceived > version_protocol)
+    if(protocolVersionReceived != version_protocol)
     {
         cout << "Error: protocol incompatible, desactivation of the client" << endl;
         isActive = false;
