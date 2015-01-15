@@ -1,5 +1,6 @@
 #include "featuresmanager.h"
 
+#include <functional>
 #include <fstream>
 #include "exchangemanager.h"
 #include "features.h"
@@ -86,8 +87,9 @@ void FeaturesManager::sendNext()
             }
 
             // Fill the array
-            size_t arrayToSendSize = 0; // Offset
+            size_t arrayToSendSize = 1; // Offset
             Features::computeArray(arrayToSend, arrayToSendSize, listCurrentSequenceFeatures);
+            arrayToSend[0] = std::hash<std::string>()(currentSequence.getName()); // Hashcode used as id
 
             // Send the features over the network
             ExchangeManager::getInstance().publishFeatures(arrayToSendSize*sizeof(float),arrayToSend);

@@ -3,10 +3,13 @@
 #include <algorithm>
 #include <array>
 
-unsigned int Features::sizeElementArray = 0;
 
 // Variables for features computation
 #define HIST_SIZE 100
+
+unsigned int Features::sizeElementArray = 0 // Just to be sure
+        + 3*HIST_SIZE // Histogram size
+        + NB_MAJOR_COLORS_EXTRACT*3; // Major colors
 
 // Sort color elements
 bool sortMajorColors(MajorColorElem elem1, MajorColorElem elem2)
@@ -34,10 +37,6 @@ void Features::computeFeature(const string &id, FeaturesElement &featuresElemOut
 
     histRGB(imgPers, imgMaskPers, featuresElemOut.histogramChannels);
     majorColors(imgPers, imgMaskPers, featuresElemOut.majorColors);
-
-    sizeElementArray = 0; // Just to be sure
-    sizeElementArray += 3*HIST_SIZE; // Histogram size
-    sizeElementArray += NB_MAJOR_COLORS_EXTRACT*3; // Major colors
 }
 
 void Features::computeArray(float *&array, size_t &sizeArray, const vector<FeaturesElement> &listFeatures)
