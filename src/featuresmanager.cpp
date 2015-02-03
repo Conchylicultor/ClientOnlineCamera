@@ -108,10 +108,13 @@ void FeaturesManager::sendNext()
 
 void FeaturesManager::computeAddInfo(float *&array, const Sequence &sequence)
 {
-    int value = 0;
+    if(sizeof(float) != sizeof(int)) // For casting
+    {
+        cout << "Error: convertion float<->int impossible" << endl;
+        exit(0);
+    }
 
-    value = std::hash<std::string>()(sequence.getName()); // Hashcode used as id
-    array[0] = reinterpret_cast<float&>(value);
+    int value = 0; // Used as intermediate for bit copy into float
 
     FileStorage fileTraceCam("../../Data/Traces/" + sequence.getCamInfoId() + ".yml", FileStorage::READ);
     if(!fileTraceCam.isOpened())
@@ -120,20 +123,21 @@ void FeaturesManager::computeAddInfo(float *&array, const Sequence &sequence)
         exit(0);
     }
 
-    if(sizeof(float) != sizeof(int))
-    {
-        cout << "Error: convertion float<->int impossible" << endl;
-        exit(0);
-    }
+    // Save the name id
+    value = std::hash<std::string>()(sequence.getName()); // Hashcode used as id
+    array[0] = reinterpret_cast<float&>(value);
 
+    // Save the cam id
     value = std::hash<std::string>()(fileTraceCam["camId"]);
     array[1] = reinterpret_cast<float&>(value);
 
+    // Save the entrance and exit time
     value = fileTraceCam["beginDate"];
     array[2] = reinterpret_cast<float&>(value);
     value = fileTraceCam["endDate"];
     array[3] = reinterpret_cast<float&>(value);
 
+    // Save the entrance and exit direction
     FileNode nodeVector;
     cv::Vec2f directionVector;
 
