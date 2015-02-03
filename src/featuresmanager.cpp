@@ -41,6 +41,11 @@ FeaturesManager::FeaturesManager()
             listSequences.push_back(Sequence(line));
             currentSequence = &listSequences.back();
         }
+        // The associated camera information file
+        else if(line.find("_cam") != std::string::npos)
+        {
+            currentSequence->setCamInfoId(line);
+        }
         // Otherwise, simply add the image to the current person
         else
         {
@@ -87,13 +92,65 @@ void FeaturesManager::sendNext()
             }
 
             // Fill the array
-            size_t arrayToSendSize = 1; // Offset
+            size_t arrayToSendSize = 8; // Offset
+
             Features::computeArray(arrayToSend, arrayToSendSize, listCurrentSequenceFeatures);
-            arrayToSend[0] = std::hash<std::string>()(currentSequence.getName()); // Hashcode used as id
+
+            // Add offset values to the array
+            computeAddInfo(arrayToSend, currentSequence);
 
             // Send the features over the network
             ExchangeManager::getInstance().publishFeatures(arrayToSendSize*sizeof(float),arrayToSend);
         }
         ++currentSequenceId;
     }
+}
+
+void FeaturesManager::computeAddInfo(float *&array, const Sequence &sequence)
+{
+    int value = 0;
+
+    value = std::hash<std::string>()(sequence.getName()); // Hashcode used as id
+    array[0] = reinterpret_cast<float&>(value);
+
+    FileStorage fileTraceCam("../../Data/Traces/" + sequence.getCamInfoId() + ".yml", FileStorage::READ);
+    if(!fileTraceCam.isOpened())
+    {
+        cout << "Error: Cannot open the additional information file for the sequence " << sequence.getCamInfoId() << endl;
+        exit(0);
+    }
+
+    if(sizeof(float) != sizeof(int))
+    {
+        cout << "Error: convertion float<->int impossible" << endl;
+        exit(0);
+    }
+
+    value = std::hash<std::string>()(fileTraceCam["camId"]);
+    array[1] = reinterpret_cast<float&>(value);
+
+    value = fileTraceCam["beginDate"];
+    array[2] = reinterpret_cast<float&>(value);
+    value = fileTraceCam["endDate"];
+    array[3] = reinterpret_cast<float&>(value);
+
+    FileNode nodeVector;
+    cv::Vec2f directionVector;
+
+    nodeVector = fileTraceCam["entranceVector"];
+    directionVector = Vec2f(static_cast<float>(nodeVector["x2"]) - static_cast<float>(nodeVector["x1"]),
+                            static_cast<float>(nodeVector["y2"]) - static_cast<float>(nodeVector["y1"]));
+    cv::normalize(directionVector, directionVector);
+    array[4] = directionVector[0];
+    array[5] = directionVector[1];
+
+
+    nodeVector = fileTraceCam["exitVector"];
+    directionVector = Vec2f(static_cast<float>(nodeVector["x2"]) - static_cast<float>(nodeVector["x1"]),
+                            static_cast<float>(nodeVector["y2"]) - static_cast<float>(nodeVector["y1"]));
+    cv::normalize(directionVector, directionVector);
+    array[6] = directionVector[0];
+    array[7] = directionVector[1];
+
+    fileTraceCam.release();
 }

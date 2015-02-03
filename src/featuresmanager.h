@@ -20,6 +20,8 @@ public:
     void sendNext();
 
 private:
+    static void computeAddInfo(float* &array, // Already alocated
+                               const Sequence &sequence);
     vector<Sequence> listSequences;
 
     unsigned int currentSequenceId;

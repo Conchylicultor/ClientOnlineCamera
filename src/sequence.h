@@ -17,8 +17,12 @@ public:
     void addImageId(const string &newId);
     vector<string> getListImageIds() const;
 
+    string getCamInfoId() const;
+    void setCamInfoId(const string &value);
+
 private:
     string name;
+    string camInfoId;
     vector<string> listImageIds;
 };
 

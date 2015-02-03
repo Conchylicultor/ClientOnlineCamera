@@ -19,3 +19,14 @@ vector<string> Sequence::getListImageIds() const
 {
     return listImageIds;
 }
+
+string Sequence::getCamInfoId() const
+{
+    return camInfoId;
+}
+
+void Sequence::setCamInfoId(const string &value)
+{
+    camInfoId = value;
+}
+
