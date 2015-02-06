@@ -3,9 +3,9 @@
 #include <unistd.h>
 #include <iostream>
 #include <string>
+#include "opencv2/opencv.hpp"
 
 using namespace std;
-#define ADDRESS     "133.5.19.83"
 
 const string protocolVersionTopic = "reid_client/protocol_version";
 const string newCamTopic = "cam_clients/new_connection";
@@ -21,17 +21,40 @@ ExchangeManager &ExchangeManager::getInstance()
 }
 
 ExchangeManager::ExchangeManager() : mosqpp::mosquittopp(),
+    clientId(0),
     isActive(false),
     isLocked(false)
 {
     // Initialise the library
     mosqpp::lib_init();
 
-    clientId = ::getpid();
+    // Loading the configuration
+    string adressBrocker;
+
+    cv::FileStorage fileConfig("../config.yml", cv::FileStorage::READ);
+    if(!fileConfig.isOpened())
+    {
+        cout << "Error: cannot open the configuration file" << endl;
+        exit(0);
+    }
+
+    fileConfig["brokerIp"] >> adressBrocker;
+
+    if(!fileConfig["clientId"].empty())
+    {
+        fileConfig["clientId"] >> clientId;
+    }
+    else
+    {
+        cout << "Warning: Try to attribute an id to the camera client" << endl;
+        clientId = ::getpid();
+    }
+
+    fileConfig.release();
 
     // Creating a client instance
     // /!\ Warning: Each client must have a UNIQUE id !!!
-    this->reinitialise(std::to_string(clientId).c_str(), true);
+    this->reinitialise(string("CamClient_" + std::to_string(clientId)).c_str(), true);
 
     // Configure the will before the connection
     int result = this->will_set(removeCamTopic.c_str(),
@@ -55,7 +78,8 @@ ExchangeManager::ExchangeManager() : mosqpp::mosquittopp(),
 
     // Connect the client to the broker.
     // Please indicate the right IP address or server name
-    result = this->connect(ADDRESS);
+    cout << "Try connecting the client " << clientId << " to the brocker..." << endl;
+    result = this->connect(adressBrocker.c_str());
     // Check the result
     switch (result)
     {
