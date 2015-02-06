@@ -77,7 +77,6 @@ ExchangeManager::ExchangeManager() : mosqpp::mosquittopp(),
     }
 
     // Connect the client to the broker.
-    // Please indicate the right IP address or server name
     cout << "Try connecting the client " << clientId << " to the brocker..." << endl;
     result = this->connect(brokerAdress.c_str());
     // Check the result
