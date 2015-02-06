@@ -7,8 +7,8 @@ In order to run the program, the folder ClientOnlineCamera must contain a config
 
 ```
 %YAML:1.0
-brokerIp:'192.168.0.64'
-clientId:'CamClient_6'
+brokerIp: '192.168.100.13'
+clientId: 6
 ```
 
 If the clientId parameter is not set, the program will automatically attribute an id corresponding to the pid of the program.
