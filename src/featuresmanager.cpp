@@ -132,7 +132,7 @@ void FeaturesManager::computeAddInfo(float *&array, const Sequence &sequence)
         exit(0);
     }
 
-    // Save the client name id
+    // Save the sequence name id
     size_t hashCode = 0;
     unsigned int mostSignificantBits = 0;
     unsigned int leastSignificantBits = 0;
