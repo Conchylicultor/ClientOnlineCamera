@@ -92,7 +92,16 @@ void FeaturesManager::sendNext()
             }
 
             // Fill the array
-            size_t arrayToSendSize = 8; // Offset
+
+            size_t arrayToSendSize = 0; // Offset
+            if(sizeof(size_t)/sizeof(float) != 2) // Depending of the computer architecture
+            {
+                cout << "Error: wrong architecture 2!=" << sizeof(size_t)/sizeof(float) << ", cannot send the size_t" << endl;
+            }
+            arrayToSendSize += 2; // Hashcode sequence name
+            arrayToSendSize += 2; // Hashcode camera name
+            arrayToSendSize += 2; // Entrance and exit time
+            arrayToSendSize += 4; // Entrance and exit vectors
 
             Features::computeArray(arrayToSend, arrayToSendSize, listCurrentSequenceFeatures);
 
@@ -123,19 +132,31 @@ void FeaturesManager::computeAddInfo(float *&array, const Sequence &sequence)
         exit(0);
     }
 
-    // Save the name id
-    value = std::hash<std::string>()(sequence.getName()); // Hashcode used as id
-    array[0] = reinterpret_cast<float&>(value);
+    // Save the client name id
+    size_t hashCode = 0;
+    unsigned int mostSignificantBits = 0;
+    unsigned int leastSignificantBits = 0;
+
+    hashCode = std::hash<std::string>()(sequence.getName()); // Hashcode used as id
+
+    leastSignificantBits = hashCode & 0xFFFFFFFF;
+    mostSignificantBits = hashCode >> 32 & 0xFFFFFFFF;
+    array[0] = reinterpret_cast<float&>(leastSignificantBits);
+    array[1] = reinterpret_cast<float&>(mostSignificantBits);
 
     // Save the cam id
-    value = std::hash<std::string>()(fileTraceCam["camId"]);
-    array[1] = reinterpret_cast<float&>(value);
+    hashCode = std::hash<std::string>()(fileTraceCam["camId"]);
+
+    leastSignificantBits = hashCode & 0xFFFFFFFF;
+    mostSignificantBits = hashCode >> 32 & 0xFFFFFFFF;
+    array[2] = reinterpret_cast<float&>(leastSignificantBits);
+    array[3] = reinterpret_cast<float&>(mostSignificantBits);
 
     // Save the entrance and exit time
     value = fileTraceCam["beginDate"];
-    array[2] = reinterpret_cast<float&>(value);
+    array[4] = reinterpret_cast<float&>(value);
     value = fileTraceCam["endDate"];
-    array[3] = reinterpret_cast<float&>(value);
+    array[5] = reinterpret_cast<float&>(value);
 
     // Save the entrance and exit direction
     FileNode nodeVector;
@@ -145,16 +166,16 @@ void FeaturesManager::computeAddInfo(float *&array, const Sequence &sequence)
     directionVector = Vec2f(static_cast<float>(nodeVector["x2"]) - static_cast<float>(nodeVector["x1"]),
                             static_cast<float>(nodeVector["y2"]) - static_cast<float>(nodeVector["y1"]));
     cv::normalize(directionVector, directionVector);
-    array[4] = directionVector[0];
-    array[5] = directionVector[1];
+    array[6] = directionVector[0];
+    array[7] = directionVector[1];
 
 
     nodeVector = fileTraceCam["exitVector"];
     directionVector = Vec2f(static_cast<float>(nodeVector["x2"]) - static_cast<float>(nodeVector["x1"]),
                             static_cast<float>(nodeVector["y2"]) - static_cast<float>(nodeVector["y1"]));
     cv::normalize(directionVector, directionVector);
-    array[6] = directionVector[0];
-    array[7] = directionVector[1];
+    array[8] = directionVector[0];
+    array[9] = directionVector[1];
 
     fileTraceCam.release();
 }
