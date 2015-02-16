@@ -23,7 +23,9 @@ ExchangeManager &ExchangeManager::getInstance()
 ExchangeManager::ExchangeManager() : mosqpp::mosquittopp(),
     clientId(0),
     isActive(false),
-    isLocked(false)
+    isLocked(false),
+    midExit(0),
+    exitSend(false)
 {
     // Initialise the library
     mosqpp::lib_init();
@@ -102,10 +104,19 @@ ExchangeManager::ExchangeManager() : mosqpp::mosquittopp(),
 
 ExchangeManager::~ExchangeManager()
 {
+    // Send the last will
     this->publish(removeCamTopic,
                   sizeof(int),
                   &clientId,
-                  2);
+                  2,
+                  false,
+                  &midExit);
+
+    // Wait that the message has been send
+    while(!exitSend)
+    {
+        loop();
+    }
 
     // Disconnect properly
     this->disconnect();
@@ -129,10 +140,10 @@ bool ExchangeManager::getIsLocked() const
     return isLocked;
 }
 
-void ExchangeManager::publish(const string &topic, int payloadlen, const void *payload, int qos, bool retain)
+void ExchangeManager::publish(const string &topic, int payloadlen, const void *payload, int qos, bool retain, int *mid)
 {
     // Publish
-    int result = mosqpp::mosquittopp::publish(NULL, topic.c_str(), payloadlen, payload, qos, retain);
+    int result = mosqpp::mosquittopp::publish(mid, topic.c_str(), payloadlen, payload, qos, retain);
 
     // Check the result
     switch (result) {
@@ -218,6 +229,15 @@ void ExchangeManager::onProtocolVersion(const mosquitto_message *message)
 
 void ExchangeManager::on_publish(int mid)
 {
-    std::cout << "Publication done !!!" << std::endl;
-    isLocked = false;
+    // If the exit message has been send, we can exit properly
+    if(mid == midExit)
+    {
+        exitSend = true;
+    }
+    // Unlock exchange for the next publication
+    else
+    {
+        std::cout << "Publication done !!!" << std::endl;
+        isLocked = false;
+    }
 }

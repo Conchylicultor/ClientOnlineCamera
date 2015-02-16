@@ -26,7 +26,7 @@ private:
     ~ExchangeManager();
 
     // Assure C++ compatibility, handle errors, remove unused parameter
-    void publish(const std::string &topic, int payloadlen=0, const void *payload=NULL, int qos=0, bool retain=false);
+    void publish(const std::string &topic, int payloadlen=0, const void *payload=NULL, int qos=0, bool retain=false, int *mid = NULL);
     void subscribe(const std::string &sub, int qos=0);
 
     void on_message(const struct mosquitto_message *message);
@@ -39,6 +39,10 @@ private:
     bool isActive;
     // True if a message is currently send
     bool isLocked;
+
+    // When exiting, we assure the broker receive the disconnection message
+    int midExit;
+    bool exitSend;
 };
 
 #endif // EXCHANGEMANAGER_H
