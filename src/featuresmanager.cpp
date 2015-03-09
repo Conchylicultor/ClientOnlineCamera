@@ -101,7 +101,7 @@ void FeaturesManager::sendNext()
             arrayToSendSize += 2; // Hashcode sequence name
             arrayToSendSize += 2; // Hashcode camera name
             arrayToSendSize += 2; // Entrance and exit time
-            arrayToSendSize += 4; // Entrance and exit vectors
+            arrayToSendSize += 8; // Entrance and exit vectors
 
             Features::computeArray(arrayToSend, arrayToSendSize, listCurrentSequenceFeatures);
 
@@ -160,22 +160,18 @@ void FeaturesManager::computeAddInfo(float *&array, const Sequence &sequence)
 
     // Save the entrance and exit direction
     FileNode nodeVector;
-    cv::Vec2f directionVector;
 
     nodeVector = fileTraceCam["entranceVector"];
-    directionVector = Vec2f(static_cast<float>(nodeVector["x2"]) - static_cast<float>(nodeVector["x1"]),
-                            static_cast<float>(nodeVector["y2"]) - static_cast<float>(nodeVector["y1"]));
-    cv::normalize(directionVector, directionVector);
-    array[6] = directionVector[0];
-    array[7] = directionVector[1];
-
+    array[6] = static_cast<float>(nodeVector["x1"]);
+    array[7] = static_cast<float>(nodeVector["y1"]);
+    array[8] = static_cast<float>(nodeVector["x2"]);
+    array[9] = static_cast<float>(nodeVector["y2"]);
 
     nodeVector = fileTraceCam["exitVector"];
-    directionVector = Vec2f(static_cast<float>(nodeVector["x2"]) - static_cast<float>(nodeVector["x1"]),
-                            static_cast<float>(nodeVector["y2"]) - static_cast<float>(nodeVector["y1"]));
-    cv::normalize(directionVector, directionVector);
-    array[8] = directionVector[0];
-    array[9] = directionVector[1];
+    array[10] = static_cast<float>(nodeVector["x1"]);
+    array[11] = static_cast<float>(nodeVector["y1"]);
+    array[12] = static_cast<float>(nodeVector["x2"]);
+    array[13] = static_cast<float>(nodeVector["y2"]);
 
     fileTraceCam.release();
 }
