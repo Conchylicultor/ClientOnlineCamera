@@ -26,8 +26,14 @@ struct MajorColorElem
 
 struct FeaturesElement
 {
+    // Images feature
     array<Mat, 3> histogramChannels;
     array<MajorColorElem, NB_MAJOR_COLORS_EXTRACT> majorColors;
+
+    // Image id information
+    int clientId;
+    int silhouetteId;
+    int imageId;
 };
 
 class Features

@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <array>
+#include <regex>
 
 
 // Variables for features computation
@@ -37,6 +38,23 @@ void Features::computeFeature(const string &id, FeaturesElement &featuresElemOut
 
     histRGB(imgPers, imgMaskPers, featuresElemOut.histogramChannels);
     majorColors(imgPers, imgMaskPers, featuresElemOut.majorColors);
+
+    // Extract the image id information
+    std::regex imageIdInfoRegex("(\\d+)_(\\d+)_(\\d+)");
+    std::smatch match;
+    if (std::regex_search(id, match, imageIdInfoRegex) && match.size() > 3)
+    {
+        featuresElemOut.clientId = std::stoi(match.str(1));
+        featuresElemOut.silhouetteId = std::stoi(match.str(2));
+        featuresElemOut.imageId = std::stoi(match.str(3));
+    }
+    else
+    {
+        cout << "Error: Cannot extract the image id information: " << id << endl;
+        featuresElemOut.clientId = 0;
+        featuresElemOut.silhouetteId = 0;
+        featuresElemOut.imageId = 0;
+    }
 }
 
 void Features::computeArray(float *&array, size_t &sizeArray, const vector<FeaturesElement> &listFeatures)
