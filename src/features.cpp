@@ -6,9 +6,9 @@
 
 
 // Variables for features computation
-#define HIST_SIZE 100
+const int HIST_SIZE = 100;
 
-unsigned int Features::sizeElementArray = 0 // Just to be sure
+unsigned int Features::sizeElementArray = 3 // For the image id information
         + 3*HIST_SIZE // Histogram size
         + NB_MAJOR_COLORS_EXTRACT*3; // Major colors
 
@@ -77,6 +77,12 @@ void Features::computeArray(float *&array, size_t &sizeArray, const vector<Featu
     size_t currentId = sizeArray; // We start with the offset
     for(FeaturesElement currentElem : listFeatures)
     {
+        // Image id information
+        array[currentId + 0] = currentElem.clientId;
+        array[currentId + 1] = currentElem.silhouetteId;
+        array[currentId + 2] = currentElem.imageId;
+        currentId += 3;
+
         // Histogram
         for(size_t channelId = 0 ; channelId < 3 ; ++channelId)
         {
