@@ -133,6 +133,16 @@ void Features::majorColors(const Mat &frame, const Mat &fgMask, array<MajorColor
     // Step 1: Map the src to the samples
     Mat samples(cv::countNonZero(fgMask), 3, CV_32F); // We only cluster the "white" pixels
 
+    if(samples.rows <= NB_MAJOR_COLORS_EXTRACT) // Check if there is enough colors
+    {
+        for(MajorColorElem &colorElem : listMajorColors)
+        {
+            colorElem.color = Vec3b(0,0,0);
+            colorElem.weightColor = 0;
+            return;
+        }
+    }
+
     int i = 0;
     for (int x = 0 ; x < fgMask.rows ; ++x)
     {
@@ -154,9 +164,9 @@ void Features::majorColors(const Mat &frame, const Mat &fgMask, array<MajorColor
     int attempts = 5;
     cv::Mat centers;
     cv::kmeans(samples, clusterCount, labels,
-               cv::TermCriteria(CV_TERMCRIT_ITER | CV_TERMCRIT_EPS,
-                                10, 0.01),
-               attempts, cv::KMEANS_PP_CENTERS, centers);
+                   cv::TermCriteria(CV_TERMCRIT_ITER | CV_TERMCRIT_EPS,
+                                    10, 0.01),
+                   attempts, cv::KMEANS_PP_CENTERS, centers);
 
 
     // Step 3: Fill information
