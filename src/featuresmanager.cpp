@@ -46,11 +46,6 @@ FeaturesManager::FeaturesManager()
         {
             currentSequence->setCamInfoId(line);
         }
-        // Otherwise, simply add the image to the current person
-        else
-        {
-            currentSequence->addImageId(line);
-        }
     }
 
     fileListPersons.close();
