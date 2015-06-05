@@ -20,16 +20,28 @@ FeaturesManager::FeaturesManager()
 {
     // Loading the lists of sequences
 
-    ifstream fileListPersons("../../Data/Traces/traces.txt");
+    // Two options:
+    // 1) From the sequences extracted from the camera
+    // 2) From the labelized trace file (computed with the network visualizer)
+
+    ifstream fileListPersons("../../Data/OutputReid/trace_labelized.txt");
+
     if(!fileListPersons.is_open())
     {
-        cout << "Error: Impossible to load the trace file" << endl;
-        exit(0);
+        fileListPersons.open("../../Data/Traces/traces.txt");
+        if(!fileListPersons.is_open())
+        {
+            cout << "Error: Impossible to load the trace file" << endl;
+            exit(0);
+        }
+    }
+    else
+    {
+        cout << "Labelized traces loaded !!!" << endl;
     }
 
     // /!\ Warning: No verification on the file
 
-    Sequence *currentSequence = nullptr;
     for(string line; std::getline(fileListPersons, line); )
     {
         // If new group of image
@@ -39,12 +51,6 @@ FeaturesManager::FeaturesManager()
             replace(line, " -----", "");
 
             listSequences.push_back(Sequence(line));
-            currentSequence = &listSequences.back();
-        }
-        // The associated camera information file
-        else if(line.find("_cam") != std::string::npos)
-        {
-            currentSequence->setCamInfoId(line);
         }
     }
 

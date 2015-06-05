@@ -43,6 +43,9 @@ Sequence::Sequence(const string &nameSequence)
     }
 
     imgListFile.close();
+
+    // Finally, we add the cam infos
+    camInfoId = sequenceId + "_cam";
 }
 
 string Sequence::getName() const
@@ -59,9 +62,3 @@ string Sequence::getCamInfoId() const
 {
     return camInfoId;
 }
-
-void Sequence::setCamInfoId(const string &value)
-{
-    camInfoId = value;
-}
-
