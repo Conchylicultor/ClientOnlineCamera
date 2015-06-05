@@ -25,8 +25,6 @@ Sequence::Sequence(const string &nameSequence)
         name = nameSequence;
     }
 
-    cout << name << "| |" << sequenceId << "|"<<endl;
-
     // Load all image id
     // Otherwise, simply add the image to the current person
 
