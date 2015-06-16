@@ -24,7 +24,7 @@ FeaturesManager::FeaturesManager()
     // 1) From the sequences extracted from the camera
     // 2) From the labelized trace file (computed with the network visualizer)
 
-    ifstream fileListPersons("../../Data/OutputReid/trace_labelized.txt");
+    ifstream fileListPersons("../../Data/OutputReid/traces_labelized.txt");
 
     if(!fileListPersons.is_open())
     {
@@ -37,7 +37,9 @@ FeaturesManager::FeaturesManager()
     }
     else
     {
-        cout << "Labelized traces loaded !!!" << endl;
+        cout << "------------------------------------------------------------------" << endl;
+        cout << "------WARNING: LABELLED TRACES FILE DETECTED AND USED !!!!!!------" << endl;
+        cout << "------------------------------------------------------------------" << endl;
     }
 
     // /!\ Warning: No verification on the file
